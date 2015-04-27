@@ -66,6 +66,17 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
+      <artifactId>bus-message-dtos</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-bus-metrics-forwarder</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
       <artifactId>hawkular-pinger</artifactId>
       <version>${version.org.hawkular.pinger}</version>
       <type>war</type>
@@ -94,11 +105,18 @@
       <version>${version.org.hawkular.alerts}</version>
       <type>war</type>
     </dependency>
+<!--
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>hawkular-metrics-api-jaxrs</artifactId>
       <version>${version.org.hawkular.metrics}</version>
       <type>war</type>
+    </dependency>
+-->
+    <dependency>
+      <groupId>org.hawkular.glue</groupId>
+      <artifactId>metrics-ear</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>

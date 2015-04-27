@@ -69,6 +69,11 @@
       <artifactId>hawkular-bus-common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>bus-message-dtos</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.logging</groupId>
@@ -108,6 +113,11 @@
                   <groupId>org.apache.httpcomponents</groupId>
                   <artifactId>httpclient</artifactId>
                   <version>4.3.1</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.alerts</groupId>
+                  <artifactId>hawkular-alerts-bus</artifactId>
+                  <version>1.0.0-SNAPSHOT</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>

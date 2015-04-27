@@ -16,22 +16,14 @@
  */
 package org.hawkular.component.availcreator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
+import com.google.gson.Gson;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.hawkular.bus.messages.AvailDataMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
@@ -39,7 +31,14 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.ObjectMessage;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
-import com.google.gson.Gson;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Publish Avail data
@@ -54,20 +53,20 @@ public class AvailPublisher {
     //@Asynchronous
     // I don't think we need to propagate the Tx here, just make the rest call outside of a Tx.
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public void sendToMetricsViaRest(List<SingleAvail> availabilities) {
+    public void sendToMetricsViaRest(List<AvailDataMessage.SingleAvail> availabilities) {
         // Send it to metrics via rest
 
         HttpClient client = HttpClientBuilder.create().build();
 
-        for (SingleAvail avr : availabilities) {
+        for (AvailDataMessage.SingleAvail avr : availabilities) {
 
-            String rid = avr.id;
-            String tenantId = avr.tenantId;
+            String rid = avr.getId();
+            String tenantId = avr.getTenantId();
 
             HttpPost request = new HttpPost("http://localhost:8080/hawkular-metrics/" + tenantId +
                     "/metrics/availability/" + rid + "/data");
 
-            Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());
+            Availability availability = new Availability(avr.getTimestamp(), avr.getAvail().toLowerCase());
             List<Availability> list = new ArrayList<>(1);
             list.add(availability);
             String payload = new Gson().toJson(list);
@@ -84,7 +83,11 @@ public class AvailPublisher {
         }
     }
 
-    public void publishToTopic(List<SingleAvail> availRecordList, MetricReceiver metricReceiver) {
+    public void publishToTopic(List<AvailDataMessage.SingleAvail> availRecordList, MetricReceiver metricReceiver) {
+
+        AvailDataMessage.AvailData availData = new AvailDataMessage.AvailData();
+        availData.setData(availRecordList);
+        AvailDataMessage adm = new AvailDataMessage(availData);
         if (metricReceiver.topic != null) {
             Map<String, Object> outer = new HashMap<>(1);
             Map<String, Object> data = new HashMap<>(2);

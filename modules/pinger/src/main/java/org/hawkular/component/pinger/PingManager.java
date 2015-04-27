@@ -16,12 +16,12 @@
  */
 package org.hawkular.component.pinger;
 
+import org.hawkular.bus.messages.MetricDataMessage.SingleMetric;
 import org.hawkular.inventory.api.model.Environment;
 import org.hawkular.inventory.api.model.MetricType;
 import org.hawkular.inventory.api.model.MetricUnit;
 import org.hawkular.inventory.api.model.ResourceType;
 import org.hawkular.inventory.api.model.Tenant;
-import org.hawkular.metrics.client.common.SingleMetric;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;

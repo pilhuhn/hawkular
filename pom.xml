@@ -54,8 +54,11 @@
 
   <modules>
     <module>ui/console</module>
+    <module>modules/bus-message-dto</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
+    <module>modules/bus-metrics-forwarder</module>
+    <module>modules/hawkular-metrics-ear</module>
     <module>kettle</module>
   </modules>
 

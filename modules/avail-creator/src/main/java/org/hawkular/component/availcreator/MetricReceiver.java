@@ -16,19 +16,16 @@
  */
 package org.hawkular.component.availcreator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.hawkular.bus.common.consumer.BasicMessageListener;
+import org.hawkular.bus.messages.AvailDataMessage.SingleAvail;
+import org.hawkular.bus.messages.MetricDataMessage;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
-import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Receiver that listens on JMS Topic and checks for metrics *.status.code
@@ -51,7 +48,7 @@ import com.google.gson.GsonBuilder;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "HawkularMetricData")
 })
-public class MetricReceiver implements MessageListener {
+public class MetricReceiver extends BasicMessageListener<MetricDataMessage> {
 
     @javax.annotation.Resource(lookup = "java:/topic/HawkularAvailData")
     javax.jms.Topic topic;
@@ -63,29 +60,26 @@ public class MetricReceiver implements MessageListener {
     AvailPublisher availPublisher;
 
     @Override
-    public void onMessage(Message message) {
+    public void onBasicMessage(MetricDataMessage message) {
 
         try {
-            String payload = ((TextMessage) message).getText();
-            Map map = new GsonBuilder().create().fromJson(payload, Map.class);
+            MetricDataMessage.MetricData data =message.getMetricData();
+            String tenant = data.getTenantId();
+            List<MetricDataMessage.SingleMetric> dataList = data.getData();
 
-            Map metricDataMap = (Map) map.get("metricData");
-            // Get <rid>.status.code  metrics
-            String tenant = (String) metricDataMap.get("tenantId");
-            List<Map<String, Object>> inputList = (List<Map<String, Object>>) metricDataMap.get("data");
             List<SingleAvail> outer = new ArrayList<>();
 
             List<Availability> availabilityList = new ArrayList<>();
 
-            for (Map<String, Object> item : inputList) {
+            for (MetricDataMessage.SingleMetric item : dataList) {
 
-                String source = (String) item.get("source");
+                String source = item.getSource();
                 if (source.endsWith(".status.code")) {
-                    double codeD = (double) item.get("value");
+                    double codeD = item.getValue();
                     int code = (int) codeD;
 
                     String id = source.substring(0, source.indexOf("."));
-                    double timestampD = (double) item.get("timestamp");
+                    double timestampD = (double) item.getTimestamp();
                     long timestamp = (long) timestampD;
 
                     String avail = computeAvail(code);

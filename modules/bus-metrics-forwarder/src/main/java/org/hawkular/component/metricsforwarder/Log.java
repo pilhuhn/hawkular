@@ -14,25 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.component.availcreator;
+package org.hawkular.component.metricsforwarder;
+
+import org.jboss.logging.LogMessage;
+import org.jboss.logging.Logger;
+import org.jboss.logging.Message;
+import org.jboss.logging.MessageLogger;
 
 /**
- * One single availability
+ * Log messages of the creator
  *
  * @author Heiko W. Rupp
  */
-class SingleAvail {
+@MessageLogger(projectCode = "HAWKULAR")
+public interface Log {
 
+    Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.availcreator");
 
-    String tenantId;
-    final String id;
-    final long timestamp;
-    final String avail;
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 5200, value = "No connection to topic %s possible")
+    void wNoTopicConnection(String topicName);
 
-    public SingleAvail(String tenantId, String id, long timestamp, String avail) {
-        this.tenantId = tenantId;
-        this.id = id;
-        this.timestamp = timestamp;
-        this.avail = avail;
-    }
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 5201, value = "Problem sending availabiliy to Hawkular-Metrics: %s")
+    void availPostStatus(String s);
 }

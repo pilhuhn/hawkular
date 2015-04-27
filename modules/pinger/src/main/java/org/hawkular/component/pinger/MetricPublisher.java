@@ -17,25 +17,21 @@
 package org.hawkular.component.pinger;
 
 import com.google.gson.Gson;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
-import org.hawkular.bus.common.ObjectMessage;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.hawkular.metrics.client.common.SingleMetric;
+import org.hawkular.bus.messages.MetricDataMessage;
+import org.hawkular.bus.messages.MetricDataMessage.SingleMetric;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +65,7 @@ public class MetricPublisher {
         request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
 
 
+/*
         try {
             HttpResponse response = client.execute(request);
             if (response.getStatusLine().getStatusCode()>399) {
@@ -77,6 +74,7 @@ public class MetricPublisher {
         } catch (IOException e) {
             e.printStackTrace();  // TODO: Customise this generated block
         }
+*/
     }
 
     /**
@@ -90,19 +88,15 @@ public class MetricPublisher {
 
             try ( ConnectionContextFactory factory = new ConnectionContextFactory(connectionFactory)) {
 
-                Map<String,Object> outer = new HashMap<>(1);
-
-                Map<String,Object> data = new HashMap<>(2);
-                data.put("tenantId",tenantId);
-                data.put("data",metrics);
-
-                outer.put("metricData",data);
+                MetricDataMessage.MetricData metricData = new MetricDataMessage.MetricData();
+                metricData.setData(metrics);
+                metricData.setTenantId(tenantId);
+                MetricDataMessage mdm = new MetricDataMessage(metricData);
 
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC,topic.getTopicName());
                 ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                BasicMessage msg = new ObjectMessage(outer);
                 MessageProcessor processor = new MessageProcessor();
-                processor.send(pc, msg);
+                processor.send(pc, mdm);
             }
             catch (Exception e) {
                 e.printStackTrace();

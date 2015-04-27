@@ -16,16 +16,16 @@
  */
 package org.hawkular.component.pinger.test;
 
-import java.util.List;
-import java.util.Map;
-
+import org.hawkular.bus.messages.MetricDataMessage;
 import org.hawkular.component.pinger.MetricPublisher;
 import org.hawkular.component.pinger.PingDestination;
 import org.hawkular.component.pinger.PingManager;
 import org.hawkular.component.pinger.PingStatus;
 import org.hawkular.component.pinger.Pinger;
-import org.hawkular.metrics.client.common.SingleMetric;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple test for the pinger
@@ -91,7 +91,7 @@ public class PingerTest {
         }
 
         @Override
-        public void publishToTopic(String tenantId, List<SingleMetric> metrics) {
+        public void publishToTopic(String tenantId, List<MetricDataMessage.SingleMetric> metrics) {
 
         }
     }

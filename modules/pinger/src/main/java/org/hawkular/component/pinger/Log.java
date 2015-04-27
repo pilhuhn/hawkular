@@ -53,4 +53,8 @@ public interface Log extends BasicLogger {
     @Message(id = 5004, value = "Could not contact inventory - there will be no resources to start pinging. " +
             "Code %d, message= %s")
     void wNoInventoryFound(int status, String reasonPhrase);
+
+    @LogMessage(level = Logger.Level.DEBUG)
+    @Message(id = 5005, value = "HEAD request returned this status line:\n  %s" )
+    void dPingStatus(String s);
 }
