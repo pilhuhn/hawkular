@@ -23,7 +23,7 @@ module HawkularMetrics {
 
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5', '$resource'];
 
     private resourceList;
     private metricsList;
@@ -40,6 +40,7 @@ module HawkularMetrics {
       private HawkularInventory: any,
       private HawkularMetric: any,
       private HawkularAlert: any,
+      private HawkularOps: any,
       private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
       private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
       private $q: ng.IQService,
@@ -114,6 +115,30 @@ module HawkularMetrics {
         }
       });
     }
+
+      postAction(action: any, resourceList: any): any {
+          this.$log.info("postAction ", action, resourceList);
+          var tenantId:TenantId = this.$rootScope.currentPersona.id;
+          var promises = [];
+          promises.push(this.HawkularOps.OpsQ(this.$rootScope.currentPersona.id).save(
+              {tenantId:tenantId,
+               action:action,
+               resources: resourceList}
+          ).$promise);
+      }
+
+      postAction1(action: any, resource: any): any {
+          this.$log.info("postAction ", action, resource);
+          var tenantId:TenantId = this.$rootScope.currentPersona.id;
+          var promises = [];
+          var resourceList = [];
+          resourceList.push(resource);
+          promises.push(this.HawkularOps.OpsQ(this.$rootScope.currentPersona.id).save(
+              {tenantId:tenantId,
+               action:action,
+               resources: resourceList}
+          ).$promise);
+      }
 
   }
 
