@@ -41,11 +41,13 @@
 <script src="dist/hawkular-ui-components-metrics.js"></script>
 <script src="dist/hawkular-ui-components-directives.js"></script>
 <script>
-  angular.module('hawkular-metrics').config(["HawkularMetricProvider", "HawkularInventoryProvider", "HawkularAlertProvider",
-    function(HawkularMetricProvider, HawkularInventoryProvider, HawkularAlertProvider) {
+  angular.module('hawkular-metrics').config(["HawkularMetricProvider", "HawkularInventoryProvider",
+      "HawkularAlertProvider", "HawkularOpsProvider",
+    function(HawkularMetricProvider, HawkularInventoryProvider, HawkularAlertProvider, HawkularOpsProvider) {
       HawkularMetricProvider.setPort(8080);
       HawkularInventoryProvider.setPort(8080);
       HawkularAlertProvider.setPort(8080);
+        HawkularOpsProvider.setPort(8080);
     }]);
 </script>
 
