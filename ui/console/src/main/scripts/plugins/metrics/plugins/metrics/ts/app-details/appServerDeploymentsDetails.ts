@@ -73,6 +73,7 @@ module HawkularMetrics {
     autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getResourceList();
+        this.getResolvedOps();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -123,11 +124,13 @@ module HawkularMetrics {
           promises.push(this.HawkularOps.OpsQ(this.$rootScope.currentPersona.id).save(
               {tenantId:tenantId,
                action:action,
+                  // TODO The next should perhaps be per resource and not for all
+                  opId:action + "-" + new Date().getTime(),
                resources: resourceList}
           ).$promise);
       }
 
-      postAction1(action: any, resource: any): any {
+      postActionSingle(action: any, resource: any): any {
           this.$log.info("postAction ", action, resource);
           var tenantId:TenantId = this.$rootScope.currentPersona.id;
           var promises = [];
@@ -136,10 +139,27 @@ module HawkularMetrics {
           promises.push(this.HawkularOps.OpsQ(this.$rootScope.currentPersona.id).save(
               {tenantId:tenantId,
                action:action,
+                  opId:action + "-" + new Date().getTime(),
                resources: resourceList}
           ).$promise);
       }
 
+      getResolvedOps(): any {
+          var tenantId:TenantId = this.$rootScope.currentPersona.id;
+          var theLog = this.$log;
+          this.HawkularOps.Resolved(this.$rootScope.currentPersona.id).retrieve(
+              {tenantId:tenantId,
+              opsId:'bla'},
+              (msgList, getResponseHeaders) => {
+                  this.$log.debug("Res: " + msgList);
+                  angular.forEach(msgList,function(msg, idx) {
+                      theLog.debug(" ==> " + idx + " : " + msg);
+                      toastr.info("Operation '" + msg.item.action + "' on resource '" + msg.item.resourceId + "' had this" +
+                        " result: " + msg.result);
+
+                  });
+              });
+      }
   }
 
   _module.controller('HawkularMetrics.AppServerDeploymentsDetailsController', AppServerDeploymentsDetailsController);
