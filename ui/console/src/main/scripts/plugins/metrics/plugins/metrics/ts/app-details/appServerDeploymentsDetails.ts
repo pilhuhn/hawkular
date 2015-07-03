@@ -151,11 +151,14 @@ module HawkularMetrics {
               {tenantId:tenantId,
               opsId:'bla'},
               (msgList, getResponseHeaders) => {
-                  this.$log.debug("Res: " + msgList);
                   angular.forEach(msgList,function(msg, idx) {
-                      theLog.debug(" ==> " + idx + " : " + msg);
-                      toastr.info("Operation '" + msg.item.action + "' on resource '" + msg.item.resourceId + "' had this" +
-                        " result: " + msg.result);
+                      if (msg.result.success == true) {
+                        toastr.info("Operation '" + msg.item.action + "' on resource '" + msg.item.resourceId + "' was successful");
+                      } else {
+                        toastr.warning("Operation '" + msg.item.action + "' on resource '" + msg.item.resourceId + "' had" +
+                          " this" +
+                          " result: " + msg.result.result);
+                      }
 
                   });
               });

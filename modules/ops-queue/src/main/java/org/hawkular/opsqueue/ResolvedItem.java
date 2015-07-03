@@ -25,7 +25,7 @@ public class ResolvedItem {
 
 
     OpsItem item;
-    String result;
+    OpsResult result;
 
     public ResolvedItem(OpsItem item) {
         this.item = item;
@@ -35,11 +35,11 @@ public class ResolvedItem {
         return item;
     }
 
-    public String getResult() {
+    public OpsResult getResult() {
         return result;
     }
 
-    public void setResult(String result) {
+    public void setResult(OpsResult result) {
         this.result = result;
     }
 

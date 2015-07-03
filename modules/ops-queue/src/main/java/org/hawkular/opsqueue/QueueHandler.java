@@ -109,7 +109,7 @@ public class QueueHandler {
     @POST
     @Path("/{feedId}/{opId}")
     public Response setResult(@HeaderParam("Hawkular-Tenant")String tenantId, @PathParam("feedId")String feedId,
-    @PathParam("opId") String opId, String response) {
+    @PathParam("opId") String opId, OpsResult response) {
 
         Response.ResponseBuilder builder;
 
