@@ -113,6 +113,11 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-ops-queue</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
       <groupId>org.wildfly</groupId>
       <artifactId>wildfly-dist</artifactId>
       <type>zip</type>

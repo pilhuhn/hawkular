@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,14 @@ import java.util.Map;
 public class OperationQueue {
 
     private Map<String,List<OpsItem>> queuesByFeed;
+    private Map<String,OpsItem> outstanding;
+    private Map<String,List<ResolvedItem>> resolvedItems;
 
     @PostConstruct
     private void init() {
         queuesByFeed = new HashMap<>();
+        outstanding = new HashMap<>();
+        resolvedItems = new HashMap<>();
     }
 
     public void addItem(String feedId, OpsItem item) {
@@ -65,6 +70,43 @@ public class OperationQueue {
         }
 
         OpsItem tmp = queue.remove(0);
+        outstanding.put(tmp.getId(),tmp);
         return tmp;
+    }
+
+    public OpsItem getOutstanding(String id) {
+
+        if (!outstanding.containsKey(id)) {
+            return null;
+        }
+        OpsItem item = outstanding.remove(id);
+        return item;
+    }
+
+    public boolean isOutstanding(String id ) {
+        return outstanding.containsKey(id);
+    }
+
+    public void addResolved(String tenantId, ResolvedItem item) {
+
+        List<ResolvedItem> items = resolvedItems.get(tenantId);
+        if (items==null) {
+            items = new ArrayList<>();
+            resolvedItems.put(tenantId,items);
+        }
+        items.add(item);
+    }
+
+    public List<ResolvedItem> getResolvedItems(String feedId) {
+        if (!resolvedItems.containsKey(feedId)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<ResolvedItem> items = resolvedItems.remove(feedId);
+        return items;
+    }
+
+    public boolean isResolved(String id) {
+        return resolvedItems.containsKey(id);
     }
 }

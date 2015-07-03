@@ -17,43 +17,33 @@
 package org.hawkular.opsqueue;
 
 /**
- * One item that is queued.
+ * One resolved item
  *
  * @author Heiko W. Rupp
  */
-public class OpsItem {
+public class ResolvedItem {
 
-    private String id;
-    String feedId;
-    String resourceId;
-    String action;
-    private String tenantId;
 
-    public OpsItem(String id, String feedId, String resourceId, String action, String tenantId) {
-        this.id = id;
-        this.feedId = feedId;
-        this.resourceId = resourceId;
-        this.action = action;
-        this.tenantId = tenantId;
+    OpsItem item;
+    String result;
+
+    public ResolvedItem(OpsItem item) {
+        this.item = item;
+    }
+
+    public OpsItem getItem() {
+        return item;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
     public String getId() {
-        return id;
-    }
-
-    public String getFeedId() {
-        return feedId;
-    }
-
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public String getTenantId() {
-        return tenantId;
+        return item.getId();
     }
 }

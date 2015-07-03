@@ -20,6 +20,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -31,7 +32,10 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 /**
- * Handler for the Queue
+ * Handler for the Queue.
+ *
+ * NOTE that GET methods are currently not "correct"
+ * RESTful, as they delete the item retrieved.
  *
  * @author Heiko W. Rupp
  */
@@ -64,7 +68,7 @@ public class QueueHandler {
     }
 
 
-    /** Endpoint that all the requests are sent to. */
+    /** Endpoint that all the requests to run an operation are sent to. */
     @POST
     @Path("/")
     public Response addOperation(String item) {
@@ -82,18 +86,62 @@ public class QueueHandler {
             String action = (String) bla.get("action");
             List<Map<String,String>> resources = (List<Map<String, String>>) bla.get("resources");
 
+            String opId = (String) bla.get("opId");
+            String tenantId = (String) bla.get("tenantId");
+
             for (Map<String,String> res: resources) {
 
                 String feedId = res.get("feedId");
                 String id = res.get("id");
 
-                OpsItem opsItem = new OpsItem(feedId, id, action);
+                String operationId = opId;
+
+                OpsItem opsItem = new OpsItem(operationId, feedId, id, action, tenantId);
                 queue.addItem(feedId,opsItem);
             }
 
             builder = Response.ok();
         }
         return builder.build();
+
+    }
+
+    @POST
+    @Path("/{feedId}/{opId}")
+    public Response setResult(@HeaderParam("Hawkular-Tenant")String tenantId, @PathParam("feedId")String feedId,
+    @PathParam("opId") String opId, String response) {
+
+        Response.ResponseBuilder builder;
+
+        if (!queue.isOutstanding(opId)) {
+            builder = Response.status(Response.Status.NOT_FOUND);
+            builder.entity("No operation with id " + opId + " outstanding");
+            return builder.build();
+        }
+
+        OpsItem item = queue.getOutstanding(opId);
+
+        ResolvedItem resolvedItem = new ResolvedItem(item);
+        resolvedItem.setResult(response);
+
+        queue.addResolved(tenantId, resolvedItem);
+
+        // TODO add uri
+        builder = Response.ok();
+        return builder.build();
+
+    }
+
+    @GET
+    @Path("/resolved/")
+    public Response getResolvedItems(@HeaderParam("Hawkular-Tenant")String tenantId) {
+
+        Response.ResponseBuilder builder;
+
+
+        List<ResolvedItem> items = queue.getResolvedItems(tenantId);
+
+        return Response.ok(items).build();
 
     }
 }
