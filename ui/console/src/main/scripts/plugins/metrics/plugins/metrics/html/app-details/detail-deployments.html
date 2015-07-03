@@ -1,7 +1,7 @@
 <section id="hk-deployments" class="hk-tab-content">
 
   <h3 class="pull-left">Deployment Status</h3>
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
   <div class="panel panel-default hk-summary">
     <div class="row">
       <div class="col-sm-3 hk-summary-item">
@@ -28,7 +28,7 @@
     <h3 class="pull-left">
       <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Deployment Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
     </h3>
-    <!--<span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>-->
+    <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
   </div>
   <div class="clearfix">
     <!-- No Alerts -->
